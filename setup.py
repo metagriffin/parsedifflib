@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #------------------------------------------------------------------------------
 # file: $Id$
-# auth: metagriffin <mg.github@uberdev.org>
+# auth: metagriffin <mg.github@metagriffin.net>
 # date: 2013/11/27
 # copy: (C) Copyright 2013-EOT metagriffin -- see LICENSE.txt
 #------------------------------------------------------------------------------
@@ -49,7 +49,7 @@ dependencies = [
 
 entrypoints = {
   'console_scripts': [
-    'colordiffpy        = parsedifflib.cli:main',
+    'difftokens         = parsedifflib.cli:main',
     ],
   }
 
@@ -73,7 +73,7 @@ setup(
   long_description      = read('README.rst'),
   classifiers           = classifiers,
   author                = 'metagriffin',
-  author_email          = 'mg.pypi@uberdev.org',
+  author_email          = 'mg.pypi@metagriffin.net',
   url                   = 'http://github.com/metagriffin/parsedifflib',
   keywords              = 'universal diff parse patch',
   packages              = find_packages(),
