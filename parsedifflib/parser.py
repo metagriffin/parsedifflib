@@ -203,14 +203,6 @@ def _parse_svnlook_contentChange(stage):
     return
   comment, sep, old, new = stage.source.readlines(4)
 
-  # check for empty file events
-  if old == '\n' or ( not old and not new ):
-    entry = api.Entry(api.Entry.TYPE_CONTENT, comment=comment[:-1])
-    yield api.Event.ENTRY_START, entry
-    yield api.Event.ENTRY_END, entry
-    stage.source.pushlines([old, new])
-    return
-
   # check for binary file events
   if old == '(Binary files differ)\n' and new == '\n':
     entry = api.Entry(api.Entry.TYPE_CONTENT, comment=comment[:-1])
@@ -219,9 +211,31 @@ def _parse_svnlook_contentChange(stage):
     yield api.Event.ENTRY_END, entry
     return
 
-  # if not empty or binary, ensure proper begin declaration
+  # ensure proper begin declaration
   if not ( old.startswith('--- ') and new.startswith('+++ ') ):
-    stage.source.pushlines([comment, sep, old, new])
+
+    # creating this early, just in case it is needed...
+    entry = api.Entry(api.Entry.TYPE_CONTENT, comment=comment[:-1])
+
+    # check for empty file event (ie. end of diff)
+    if not old and not new:
+      yield api.Event.ENTRY_START, entry
+      yield api.Event.LINE_NOTE, api.Line('(Empty file)')
+      yield api.Event.ENTRY_END, entry
+      return
+
+    # check for empty file event (ie. parseable entries follow)
+    stage.source.pushlines([old, new])
+    for evt in _parse_change(stage):
+      if entry is not None:
+        yield api.Event.ENTRY_START, entry
+        yield api.Event.LINE_NOTE, api.Line('(Empty file)')
+        yield api.Event.ENTRY_END, entry
+        entry = None
+      yield evt
+
+    if entry is not None:
+      stage.source.pushlines([comment, sep])
     return
 
   # and now parse the changes
