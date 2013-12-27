@@ -3,6 +3,13 @@ ChangeLog
 =========
 
 
+v0.2.0
+======
+
+* Added command line tokenizer (primarily for debugging)
+* Fixed handling of svnlook output with empty files
+
+
 v0.1.0
 ======
 
